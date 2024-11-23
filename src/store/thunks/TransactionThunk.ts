@@ -1,18 +1,13 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import {
-  ITransaction,
-  ITransactionForm,
-  ITransactionFormForBase,
-  ITransactionList,
-} from "../../types";
+import { IFormTransaction, ITransaction, ITransactionList } from "../../types";
 import axiosApi from "../../axiosAPI.ts";
 
-export const createTransaction = createAsyncThunk<
-  void,
-  ITransactionFormForBase
->("transaction/createTransaction", async (form) => {
-  await axiosApi.post("transaction.json", { ...form });
-});
+export const createTransaction = createAsyncThunk<void, IFormTransaction>(
+  "transaction/createTransaction",
+  async (form) => {
+    await axiosApi.post("transaction.json", { ...form });
+  },
+);
 
 export const fetchAllTransactions = createAsyncThunk<ITransaction[], void>(
   "transaction/fetchAllTransactions",
@@ -42,7 +37,7 @@ export const deleteOneTransaction = createAsyncThunk<void, string>(
 );
 
 export const getOneTransactionById = createAsyncThunk<
-  ITransactionForm | null,
+  ITransaction | null,
   string
 >("transaction/getOneTransactionById  ", async (Id) => {
   const response = await axiosApi<ITransaction | null>(
@@ -52,7 +47,7 @@ export const getOneTransactionById = createAsyncThunk<
 });
 export const editTransaction = createAsyncThunk<
   void,
-  { Id: string; transaction: ITransactionForm }
+  { Id: string; transaction: IFormTransaction }
 >("transaction/editTransaction", async ({ Id, transaction }) => {
   await axiosApi.put(`transaction/${Id}.json`, { ...transaction });
 });

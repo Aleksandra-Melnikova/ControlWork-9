@@ -8,13 +8,13 @@ import {
   fetchAllTransactions,
   getOneTransactionById,
 } from "../thunks/TransactionThunk.ts";
-import { ITransaction, ITransactionForm } from "../../types";
+import { ITransaction } from "../../types";
 
 interface TransactionState {
   showModal: boolean;
   isAddTransactionLoading: boolean;
   transactions: ITransaction[];
-  oneTransaction: ITransactionForm | null;
+  oneTransaction: ITransaction | null;
   isFetchTransactionLoading: boolean;
   isDeleteLoading: boolean;
   isFetchOneLoading: boolean;
@@ -109,7 +109,7 @@ const transactionSlice = createSlice({
       })
       .addCase(
         getOneTransactionById.fulfilled,
-        (state, action: PayloadAction<ITransactionForm | null>) => {
+        (state, action: PayloadAction<ITransaction | null>) => {
           state.isFetchOneLoading = false;
           state.oneTransaction = action.payload;
         },

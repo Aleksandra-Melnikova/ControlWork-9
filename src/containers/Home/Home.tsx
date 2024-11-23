@@ -16,7 +16,7 @@ import {
 import Spinner from "../../components/UI/Spinner/Spinner.tsx";
 import TransactionItem from "../../components/TransationItem/TransactionItem.tsx";
 import { selectCategories } from "../../store/slices/CategorySlice.ts";
-import { ITransaction } from "../../types";
+import { IArray } from "../../types";
 
 const Home = () => {
   const show = useAppSelector(selectTransactionShowModal);
@@ -27,6 +27,20 @@ const Home = () => {
   const isFetchTransactionLoading = useAppSelector(
     selectFetchTransactionLoading,
   );
+  const transactionsArray: IArray[] = [];
+  categories.map((category) => {
+    transactions.map((transaction) => {
+      if (category.id === transaction.category) {
+        transactionsArray.push({
+          id: transaction.id,
+          amount: transaction.amount,
+          name: category.name,
+          type: category.category,
+          date: transaction.date,
+        });
+      }
+    });
+  });
   const fetchTransactions = useCallback(async () => {
     await dispatch(fetchAllTransactions());
   }, [dispatch]);
@@ -37,15 +51,14 @@ const Home = () => {
     await dispatch(deleteOneTransaction(id));
     await fetchTransactions();
   };
-  const newArray: ITransaction[] = [];
-  transactions.map((transaction) => {
+  const newArray: IArray[] = [];
+  transactionsArray.map((transaction) => {
     categories.map((category) => {
-      if (transaction.category === category.name) {
+      if (transaction.name === category.name) {
         newArray.push(transaction);
       }
     });
   });
-  console.log(newArray);
   const total = newArray.reduce((acc, transaction) => {
     if (transaction.type === "expense") acc -= Number(transaction.amount);
     else {
@@ -56,7 +69,6 @@ const Home = () => {
   const transactionsSort = newArray.sort((a, b) => {
     return new Date(a.date).getTime() - new Date(b.date).getTime();
   });
-  console.log(transactionsSort);
   return (
     <div>
       <div className={"my-4 fs-3"}>
@@ -82,9 +94,9 @@ const Home = () => {
                   <TransactionItem
                     id={transaction.id}
                     onDelete={() => deleteTransaction(transaction.id)}
-                    key={transaction.date}
+                    key={transaction.id}
                     type={transaction.type}
-                    name={transaction.category}
+                    name={transaction.name}
                     date={transaction.date}
                     amount={transaction.amount}
                   />

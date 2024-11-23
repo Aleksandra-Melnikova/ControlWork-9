@@ -28,7 +28,12 @@ const FormTransaction = () => {
     amount: 0,
   };
   const [form, setForm] = useState<ITransactionForm>(initialForm);
+  const [IdCategory, setIdCategory] = useState("");
   const type = ["income", "expense"];
+  const [currentType, setCurrentType] = useState({
+    type: "",
+    category: "",
+  });
   const dispatch = useAppDispatch();
   const categories = useAppSelector(selectCategories);
   const addLoading = useAppSelector(selectAddTransactionLoading);
@@ -36,7 +41,6 @@ const FormTransaction = () => {
   const id = useAppSelector(selectIdTransactionEdit);
   const isEditLoading = useAppSelector(selectEditTransactionLoading);
   const oneTransaction = useAppSelector(selectOneTransaction);
-  console.log(oneTransaction);
   const fetchCategories = useCallback(async () => {
     await dispatch(fetchAllCategory());
   }, [dispatch]);
@@ -47,6 +51,11 @@ const FormTransaction = () => {
   const changeForm = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {
+    categories.map((category) => {
+      if (category.name === form.category) {
+        setIdCategory(category.id);
+      }
+    });
     setForm((prevState) => {
       return {
         ...prevState,
@@ -57,7 +66,22 @@ const FormTransaction = () => {
 
   useEffect(() => {
     if (id) {
-      if (oneTransaction) setForm({ ...oneTransaction });
+      if (oneTransaction) {
+        categories.map((category) => {
+          if (category.id === oneTransaction.category) {
+            setCurrentType({
+              type: category.category,
+              category: category.name,
+            });
+            console.log(currentType);
+          }
+        });
+        setForm({
+          type: currentType.type,
+          category: currentType.category,
+          amount: oneTransaction.amount,
+        });
+      }
     } else {
       setForm({ ...initialForm });
     }
@@ -79,7 +103,16 @@ const FormTransaction = () => {
   ) => {
     e.preventDefault();
     if (isEdit && id) {
-      await dispatch(editTransaction({ Id: id, transaction: { ...form } }));
+      await dispatch(
+        editTransaction({
+          Id: id,
+          transaction: {
+            category: IdCategory,
+            amount: form.amount,
+            date: new Date().toISOString(),
+          },
+        }),
+      );
       await dispatch(fetchAllTransactions());
       dispatch(changeIsTransactionEdit(id));
       toast.success("Transaction was edited successfully.");
@@ -90,7 +123,11 @@ const FormTransaction = () => {
         form.amount > 0
       ) {
         await dispatch(
-          createTransaction({ ...form, date: new Date().toISOString() }),
+          createTransaction({
+            category: IdCategory,
+            amount: form.amount,
+            date: new Date().toISOString(),
+          }),
         );
         await dispatch(fetchAllTransactions());
         toast.success("Transaction added successfully.");
