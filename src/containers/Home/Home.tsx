@@ -3,7 +3,7 @@ import Modal from '../../components/UI/Modal/Modal.tsx';
 import FormTransaction from '../../components/FormTransaction/FormTransaction.tsx';
 import { useAppDispatch, useAppSelector } from '../../app/hooks.ts';
 import {
-  changeTransactionShowModal,  selectFetchTransactionLoading,
+  changeTransactionShowModal, selectFetchTransactionLoading, selectTransactionEdit,
   selectTransactions,
   selectTransactionShowModal
 } from '../../store/slices/TransactionsSlice.ts';
@@ -19,7 +19,7 @@ const Home = () => {
   const show = useAppSelector(selectTransactionShowModal);
   const dispatch = useAppDispatch();
   const transactions = useAppSelector(selectTransactions);
-
+  const isEdit= useAppSelector(selectTransactionEdit);
   const isFetchTransactionLoading = useAppSelector(selectFetchTransactionLoading);
   const fetchTransactions = useCallback(async () => {
     await dispatch(fetchAllTransactions());
@@ -31,20 +31,28 @@ const Home = () => {
     await dispatch(deleteOneTransaction(id));
     await  fetchTransactions();
   };
+  const total =  transactions.reduce((acc, transaction) => {
+    if(transaction.type === 'expense')
+      acc -= Number(transaction.amount);
+    else{
+      acc += Number(transaction.amount);
+    }
+    return acc;
+  }, 0);
   return (
     <div>
-
+<div className={'my-4 fs-3'}> Total: <strong>{total}</strong></div>
       <div>
         {isFetchTransactionLoading?
           <Spinner/>:
           <>   <Modal   show={show}
-            // title={isEdit ? "Edit Category": 'Add Category'}
-                        title={'Add Expense/Income'}
+            title={isEdit ? "Edit Expense/Income": 'Add Expense/Income'}
                         closeModal={()=>dispatch(changeTransactionShowModal())}>
             <FormTransaction />
           </Modal>
             {transactions.length > 0 ? <>{transactions.map((transaction) => (
               <TransactionItem
+                id={transaction.id}
                 onDelete={() => deleteCategory(transaction.id)}
                 key={transaction.date} type={transaction.type}
                 name={transaction.category} date={transaction.date}  amount={transaction.amount} />

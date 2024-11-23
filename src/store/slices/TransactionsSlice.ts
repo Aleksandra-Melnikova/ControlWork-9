@@ -19,8 +19,8 @@ interface TransactionState {
   isDeleteLoading: boolean;
   isFetchOneLoading: boolean;
   isEditLoading: boolean;
-  // isEdit: boolean;
-  // idEdit: string | null;
+  isEdit: boolean;
+  idEdit: string | null;
 }
 
 const initialState: TransactionState = {
@@ -32,8 +32,8 @@ const initialState: TransactionState = {
   isDeleteLoading: false,
   isEditLoading: false,
   isFetchOneLoading: false,
-  // isEdit: false,
-  // idEdit: null,
+  isEdit: false,
+  idEdit: null,
 };
 export const selectAddTransactionLoading = (state: RootState) => state.transaction.isAddTransactionLoading;
 export const selectTransactionShowModal = (state: RootState) => state.transaction.showModal;
@@ -43,8 +43,8 @@ export const selectDeleteTransactionLoading = (state: RootState) => state.transa
 export const selectOneTransaction = (state: RootState) => state.transaction.oneTransaction;
 export const selectEditTransactionLoading = (state: RootState) => state.transaction.isEditLoading;
 export const selectFetchOneTransactionLoading = (state: RootState) => state.transaction.isFetchOneLoading;
-// export const selectEdit = (state: RootState) => state.category.isEdit;
-// export const selectIdEdit = (state: RootState) => state.category.idEdit;
+export const selectTransactionEdit = (state: RootState) => state.transaction.isEdit;
+export const selectIdTransactionEdit = (state: RootState) => state.transaction.idEdit;
 
 
 const transactionSlice = createSlice({
@@ -54,14 +54,14 @@ const transactionSlice = createSlice({
     changeTransactionShowModal: (state) => {
       state.showModal = !state.showModal;
     },
-  //   changeIsEdit: (state, action:PayloadAction<string>) => {
-  //     state.isEdit = !state.isEdit;
-  //     state.showModal = !state.showModal;
-  //     state.idEdit = action.payload;
-  //     if( !state.showModal){
-  //       state.idEdit = null
-  //     }
-  //   },
+    changeIsTransactionEdit: (state, action:PayloadAction<string>) => {
+      state.isEdit = !state.isEdit;
+      state.showModal = !state.showModal;
+      state.idEdit = action.payload;
+      if( !state.showModal){
+        state.idEdit = null
+      }
+    },
   },
     extraReducers: (builder) => {
       builder
@@ -125,4 +125,4 @@ const transactionSlice = createSlice({
 
 
 export const transactionReducer = transactionSlice.reducer;
-export const {changeTransactionShowModal} = transactionSlice.actions;
+export const {changeTransactionShowModal, changeIsTransactionEdit} = transactionSlice.actions;

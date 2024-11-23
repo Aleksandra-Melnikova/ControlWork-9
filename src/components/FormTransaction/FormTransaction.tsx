@@ -2,11 +2,23 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { ITransactionForm } from '../../types';
 import ButtonLoading from '../UI/ButtonLoading/ButtonLoading.tsx';
 import { useAppDispatch, useAppSelector } from '../../app/hooks.ts';
-import {  selectCategories } from '../../store/slices/CategorySlice.ts';
-import {  fetchAllCategory } from '../../store/thunks/categoryThunk.ts';
+import {
+  selectCategories,
+} from '../../store/slices/CategorySlice.ts';
+import { fetchAllCategory} from '../../store/thunks/categoryThunk.ts';
 import { toast } from 'react-toastify';
-import { createTransaction } from '../../store/thunks/TransactionThunk.ts';
-import { changeTransactionShowModal, selectAddTransactionLoading } from '../../store/slices/TransactionsSlice.ts';
+import {
+  createTransaction,
+  editTransaction,
+  fetchAllTransactions,
+  getOneTransactionById
+} from '../../store/thunks/TransactionThunk.ts';
+import {
+  changeIsTransactionEdit,
+  changeTransactionShowModal,
+  selectAddTransactionLoading, selectEditTransactionLoading, selectIdTransactionEdit, selectOneTransaction,
+  selectTransactionEdit
+} from '../../store/slices/TransactionsSlice.ts';
 
 const FormTransaction = () => {
 
@@ -20,12 +32,18 @@ const FormTransaction = () => {
   const dispatch = useAppDispatch();
   const categories = useAppSelector(selectCategories);
   const addLoading = useAppSelector(selectAddTransactionLoading);
+  const isEdit= useAppSelector(selectTransactionEdit);
+  const id = useAppSelector(selectIdTransactionEdit);
+  const isEditLoading= useAppSelector(selectEditTransactionLoading);
+  const oneTransaction = useAppSelector(selectOneTransaction);
+  console.log(oneTransaction);
   const fetchCategories = useCallback(async () => {
     await dispatch(fetchAllCategory());
   }, [dispatch]);
   useEffect(() => {
     void  fetchCategories();
   }, [ fetchCategories]);
+
   const changeForm = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setForm((prevState) => {
       return {
@@ -34,19 +52,40 @@ const FormTransaction = () => {
       };
     });
   };
+
+  useEffect(() => {
+    if (id) {
+      if (oneTransaction ) setForm({ ...oneTransaction });
+    } else {
+      setForm({ ...initialForm });
+    }
+  }, [oneTransaction , id]);
+
+  const getTransactionById = useCallback(async () => {
+    if (id) {
+      dispatch(getOneTransactionById(id));
+    }
+  }, [dispatch, id]);
+
+  useEffect(() => {
+    void getTransactionById ();
+  }, [dispatch, getTransactionById,fetchCategories ]);
+
+
   const addNewTransaction = async (e: React.FormEvent, form: ITransactionForm) => {
     e.preventDefault();
-    // if (isEdit && id) {
-    //   await dispatch(editCategory({ categoryId: id, category: { ...form } }));
-    //   dispatch(changeIsEdit(id));
-    //   toast.success("Dish was edited successfully.");
-    // } else {
+    if (isEdit && id) {
+      await dispatch(editTransaction({ Id: id, transaction: { ...form } }));
+      await dispatch(fetchAllTransactions());
+      dispatch(changeIsTransactionEdit(id));
+      toast.success("Transaction was edited successfully.");
+    } else {
 
       if (form.category.trim().length > 0 && form.type.trim().length > 0 && form.amount>0) {
         await dispatch(createTransaction(
           { ...form, date:new Date().toISOString() }
         ));
-        // await dispatch(fetchAllCategory());
+        await dispatch(fetchAllTransactions());
         toast.success("Transaction added successfully.");
         setForm(initialForm);
         dispatch(changeTransactionShowModal());
@@ -54,7 +93,7 @@ const FormTransaction = () => {
       } else {
         toast.warning("Fill all fields.");
       }
-    // }
+    }
   };
   return (
     <div>
@@ -124,10 +163,9 @@ const FormTransaction = () => {
             </div>
 
             <ButtonLoading
-              isLoading={addLoading} isDisabled={addLoading}
+              isLoading={addLoading || isEditLoading} isDisabled={addLoading || isEditLoading}
                            type="submit"
-                           // text={isEdit ? 'Save' : 'Add'}
-              text={'Save'}
+                           text={isEdit ? 'Save' : 'Add'}
             />
 
           </form>

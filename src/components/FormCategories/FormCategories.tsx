@@ -28,8 +28,6 @@ const FormCategories = () => {
   const id = useAppSelector(selectIdEdit);
   const isEditLoading= useAppSelector(selectEditLoading);
   const isCreateLoading = useAppSelector(selectAddLoading);
-
-
   const oneCategory = useAppSelector(selectOneCategory);
   const changeForm = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setForm((prevState) => {

@@ -1,19 +1,21 @@
 import React, { MouseEventHandler } from 'react';
 import dayjs from 'dayjs';
-import { useAppSelector } from '../../app/hooks.ts';
-import { selectDeleteTransactionLoading } from '../../store/slices/TransactionsSlice.ts';
+import { useAppDispatch, useAppSelector } from '../../app/hooks.ts';
+import { changeIsTransactionEdit, selectDeleteTransactionLoading } from '../../store/slices/TransactionsSlice.ts';
 import Spinner from '../UI/Spinner/Spinner.tsx';
 export interface ITransactionItemProps {
   date: string;
   name: string;
   type: string;
-  // id: string;
+  id: string;
   amount: number;
   onDelete: MouseEventHandler
 }
 
-const TransactionItem:React.FC<ITransactionItemProps > = ({date, name, type, amount, onDelete}) => {
+const TransactionItem:React.FC<ITransactionItemProps > = ({date, name, type, amount, onDelete, id}) => {
   const isDeleteTransactionLoading = useAppSelector(selectDeleteTransactionLoading);
+  const dispatch = useAppDispatch();
+
   return (
 
     <div className={'border border-1 rounded-2 mt-3 p-3 d-flex justify-content-between align-items-center fs-3 '}>
@@ -23,7 +25,7 @@ const TransactionItem:React.FC<ITransactionItemProps > = ({date, name, type, amo
       <div className="me-3">
         <button
           type="button"
-          // onClick={() => dispatch(changeIsEdit(id))}
+          onClick={() => dispatch(changeIsTransactionEdit(id))}
           className="d-inline-block mb-2 button-edit buttons-ic "
         ></button>
         <button
