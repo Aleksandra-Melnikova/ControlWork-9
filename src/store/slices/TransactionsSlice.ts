@@ -21,6 +21,7 @@ interface TransactionState {
   isEditLoading: boolean;
   isEdit: boolean;
   idEdit: string | null;
+  isFetchingOneLoading: boolean;
 }
 
 const initialState: TransactionState = {
@@ -34,6 +35,7 @@ const initialState: TransactionState = {
   isFetchOneLoading: false,
   isEdit: false,
   idEdit: null,
+  isFetchingOneLoading: false,
 };
 export const selectAddTransactionLoading = (state: RootState) =>
   state.transaction.isAddTransactionLoading;
@@ -49,6 +51,8 @@ export const selectOneTransaction = (state: RootState) =>
   state.transaction.oneTransaction;
 export const selectEditTransactionLoading = (state: RootState) =>
   state.transaction.isEditLoading;
+export const selectFetchingOneTransactionLoading = (state: RootState) =>
+  state.transaction.isFetchingOneLoading;
 export const selectTransactionEdit = (state: RootState) =>
   state.transaction.isEdit;
 export const selectIdTransactionEdit = (state: RootState) =>

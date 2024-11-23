@@ -16,10 +16,12 @@ import {
   changeTransactionShowModal,
   selectAddTransactionLoading,
   selectEditTransactionLoading,
+  selectFetchingOneTransactionLoading,
   selectIdTransactionEdit,
   selectOneTransaction,
   selectTransactionEdit,
 } from "../../store/slices/TransactionsSlice.ts";
+import Spinner from "../UI/Spinner/Spinner.tsx";
 
 const FormTransaction = () => {
   const initialForm: ITransactionForm = {
@@ -40,6 +42,7 @@ const FormTransaction = () => {
   const isEdit = useAppSelector(selectTransactionEdit);
   const id = useAppSelector(selectIdTransactionEdit);
   const isEditLoading = useAppSelector(selectEditTransactionLoading);
+  const getOneLoading = useAppSelector(selectFetchingOneTransactionLoading);
   const oneTransaction = useAppSelector(selectOneTransaction);
   const fetchCategories = useCallback(async () => {
     await dispatch(fetchAllCategory());
@@ -73,7 +76,6 @@ const FormTransaction = () => {
               type: category.category,
               category: category.name,
             });
-            console.log(currentType);
           }
         });
         setForm({
@@ -83,19 +85,19 @@ const FormTransaction = () => {
         });
       }
     } else {
-      setForm({ ...initialForm });
+      setForm({ type: "", category: "", amount: 0 });
     }
-  }, [oneTransaction, id]);
+  }, [oneTransaction, categories, id, currentType.type, currentType.category]);
 
   const getTransactionById = useCallback(async () => {
     if (id) {
-      dispatch(getOneTransactionById(id));
+      await dispatch(getOneTransactionById(id));
     }
   }, [dispatch, id]);
 
   useEffect(() => {
     void getTransactionById();
-  }, [dispatch, getTransactionById, fetchCategories]);
+  }, [dispatch, getTransactionById]);
 
   const addNewTransaction = async (
     e: React.FormEvent,
@@ -139,86 +141,92 @@ const FormTransaction = () => {
     }
   };
   return (
-    <div>
-      <div>
-        <div className=" p-2 b fs-5 text-start">
-          <form onSubmit={(e) => addNewTransaction(e, form)}>
-            <div className="form-group mb-3">
-              <label htmlFor="type" className="form-label ">
-                {" "}
-                Type
-              </label>
-              <select
-                required
-                id="type"
-                value={form.type}
-                onChange={changeForm}
-                name="type"
-                className="form-select"
-              >
-                <option className="fs-5" value="" disabled>
-                  Select a type
-                </option>
-                {type.map((c) => (
-                  <option key={c} value={c}>
-                    {c}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="form-group mb-3">
-              <label htmlFor="category" className="form-label ">
-                {" "}
-                Category
-              </label>
-              <select
-                required
-                id="category"
-                value={form.category}
-                onChange={changeForm}
-                name="category"
-                className="form-select"
-              >
-                <option className="fs-5" value="" disabled>
-                  Select a category
-                </option>
-                {categories.map((c) => {
-                  if (form.type === c.category)
-                    return (
-                      <option key={c.id} value={c.name}>
-                        {c.name}
+    <>
+      {getOneLoading ? (
+        <Spinner />
+      ) : (
+        <div>
+          <div>
+            <div className=" p-2 b fs-5 text-start">
+              <form onSubmit={(e) => addNewTransaction(e, form)}>
+                <div className="form-group mb-3">
+                  <label htmlFor="type" className="form-label ">
+                    {" "}
+                    Type
+                  </label>
+                  <select
+                    required
+                    id="type"
+                    value={form.type}
+                    onChange={changeForm}
+                    name="type"
+                    className="form-select"
+                  >
+                    <option className="fs-5" value="" disabled>
+                      Select a type
+                    </option>
+                    {type.map((c) => (
+                      <option key={c} value={c}>
+                        {c}
                       </option>
-                    );
-                })}
-              </select>
-            </div>
-            <div className="mb-3">
-              <label htmlFor="amount" className="form-label ">
-                {" "}
-                Name
-              </label>
-              <input
-                className="mb-3 form-control"
-                id="amount"
-                name="amount"
-                type="number"
-                min={0}
-                value={form.amount}
-                onChange={changeForm}
-                required
-              />
-            </div>
+                    ))}
+                  </select>
+                </div>
+                <div className="form-group mb-3">
+                  <label htmlFor="category" className="form-label ">
+                    {" "}
+                    Category
+                  </label>
+                  <select
+                    required
+                    id="category"
+                    value={form.category}
+                    onChange={changeForm}
+                    name="category"
+                    className="form-select"
+                  >
+                    <option className="fs-5" value="" disabled>
+                      Select a category
+                    </option>
+                    {categories.map((c) => {
+                      if (form.type === c.category)
+                        return (
+                          <option key={c.id} value={c.name}>
+                            {c.name}
+                          </option>
+                        );
+                    })}
+                  </select>
+                </div>
+                <div className="mb-3">
+                  <label htmlFor="amount" className="form-label ">
+                    {" "}
+                    Name
+                  </label>
+                  <input
+                    className="mb-3 form-control"
+                    id="amount"
+                    name="amount"
+                    type="number"
+                    min={0}
+                    value={form.amount}
+                    onChange={changeForm}
+                    required
+                  />
+                </div>
 
-            <ButtonLoading
-              isLoading={addLoading || isEditLoading}
-              isDisabled={addLoading || isEditLoading}
-              type="submit"
-              text={isEdit ? "Save" : "Add"}
-            />
-          </form>
+                <ButtonLoading
+                  isLoading={addLoading || isEditLoading}
+                  isDisabled={addLoading || isEditLoading}
+                  type="submit"
+                  text={isEdit ? "Save" : "Add"}
+                />
+              </form>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
+      )}
+    </>
   );
 };
 

@@ -15,9 +15,6 @@ export interface ITransactionForm {
   category: string;
   amount: number;
 }
-export interface ITransactionFormForBase extends ITransactionForm {
-  date: string;
-}
 export interface ITransaction {
   category: string;
   amount: number;
