@@ -1,26 +1,26 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { IContact, IContactsList, IForm } from "../../types";
+import { ICategory, ICategoryList, IForm } from '../../types';
 import axiosApi from "../../axiosAPI.ts";
 
-// export const fetchAllContacts = createAsyncThunk<IContact[], void>(
-//   "contacts/fetchAllContacts",
-//   async () => {
-//     const response: { data: IContactsList | null } =
-//       await axiosApi("contacts.json");
-//     const contactsList = response.data;
-//     if (contactsList === null) {
-//       return [];
-//     }
-//     const contacts: IContactsList = contactsList;
-//
-//     return Object.keys(contactsList).map((contact) => {
-//       return {
-//         ...contacts[contact],
-//         id: contact,
-//       };
-//     });
-//   },
-// );
+export const fetchAllCategory = createAsyncThunk<ICategory[], void>(
+  "category/fetchAllCategory",
+  async () => {
+    const response: { data: ICategoryList | null } =
+      await axiosApi("categories.json");
+    const categoryList = response.data;
+    if (categoryList=== null) {
+      return [];
+    }
+    const categories: ICategoryList = categoryList;
+
+    return Object.keys(categoryList).map((category) => {
+      return {
+        ...categories[category],
+        id: category,
+      };
+    });
+  },
+);
 
 // export const deleteOneContact = createAsyncThunk<void, string>(
 //   "contacts/deleteOneContact",

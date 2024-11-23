@@ -1,20 +1,27 @@
 
-import { createSlice, } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction, } from '@reduxjs/toolkit';
 
-import { createCategory } from '../thunks/categoryThunk.ts';
+import { createCategory, fetchAllCategory } from '../thunks/categoryThunk.ts';
 import { RootState } from '../../app/store.ts';
+import { ICategory } from '../../types';
 
 interface CartState {
 isAddLoading: boolean;
 showModal: boolean;
+categories: ICategory[];
+isFetchLoading: boolean;
 }
 
 const initialState: CartState = {
  isAddLoading: false,
   showModal: false,
+  categories:[],
+  isFetchLoading: false,
 };
 export const selectAddLoading = (state: RootState) => state.category.isAddLoading;
 export const selectShowModal = (state: RootState) => state.category.showModal;
+export const selectCategories = (state: RootState) => state.category.categories;
+export const selectFetchLoading = (state: RootState) => state.category.isFetchLoading;
 // export const selectOrderLoading = (state: RootState) =>
 //   state.cart.isOrderLoading;
 // export const selectOrdersAdminLoading = (state: RootState) =>
@@ -44,7 +51,20 @@ const categorySlice = createSlice({
       })
       .addCase(createCategory.rejected, (state) => {
         state.isAddLoading  = false;
-      });
+      })
+  .addCase(fetchAllCategory.pending, (state) => {
+      state.isFetchLoading = true;
+    })
+      .addCase(
+        fetchAllCategory.fulfilled,
+        (state, action: PayloadAction<ICategory[]>) => {
+          state.isFetchLoading = false;
+          state.categories = action.payload;
+        },
+      )
+      .addCase(fetchAllCategory.rejected, (state) => {
+        state.isFetchLoading = false;
+      })
       // .addCase(fetchAllOrders.pending, (state) => {
       //   state.isOrdersAdminLoading = true;
       // })

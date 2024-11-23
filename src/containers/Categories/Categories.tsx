@@ -1,13 +1,25 @@
 import Modal from '../../components/UI/Modal/Modal.tsx';
 import FormCategories from '../../components/FormCategories/FormCategories.tsx';
-import { changeShowModal, selectShowModal } from '../../store/slices/CategorySlice.ts';
+import { changeShowModal, selectCategories, selectShowModal } from '../../store/slices/CategorySlice.ts';
 import { useAppDispatch, useAppSelector } from '../../app/hooks.ts';
+import { useCallback, useEffect } from 'react';
+import { fetchAllCategory } from '../../store/thunks/categoryThunk.ts';
+import CategoryItem from '../../components/CatgoryItem/CategoryItem.tsx';
 
 
 
 const Categories = () => {
   const dispatch = useAppDispatch();
   const show = useAppSelector(selectShowModal);
+  const categories = useAppSelector(selectCategories);
+  const fetchContacts = useCallback(async () => {
+    await dispatch(fetchAllCategory());
+  }, [dispatch]);
+  useEffect(() => {
+    {
+      void fetchContacts();
+    }
+  }, [fetchContacts]);
 
   return (
     <div>
@@ -20,6 +32,9 @@ const Categories = () => {
                closeModal={()=>dispatch(changeShowModal())}>
         <FormCategories />
       </Modal>
+      {categories.map((category) => (
+        <CategoryItem key={category.id} category={category.category} name={category.name}/>
+      ))}
     </div>
   );
 };
