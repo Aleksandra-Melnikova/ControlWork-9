@@ -1,5 +1,5 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { ICategory, ICategoryList, IForm } from '../../types';
+import { ICategory, ICategoryList, IForm } from "../../types";
 import axiosApi from "../../axiosAPI.ts";
 
 export const fetchAllCategory = createAsyncThunk<ICategory[], void>(
@@ -8,7 +8,7 @@ export const fetchAllCategory = createAsyncThunk<ICategory[], void>(
     const response: { data: ICategoryList | null } =
       await axiosApi("categories.json");
     const categoryList = response.data;
-    if (categoryList=== null) {
+    if (categoryList === null) {
       return [];
     }
     const categories: ICategoryList = categoryList;
@@ -48,6 +48,6 @@ export const getOneCategoryById = createAsyncThunk<IForm | null, string>(
 export const editCategory = createAsyncThunk<
   void,
   { categoryId: string; category: IForm }
->("category/editCategory", async ({ categoryId, category}) => {
+>("category/editCategory", async ({ categoryId, category }) => {
   await axiosApi.put(`categories/${categoryId}.json`, { ...category });
 });

@@ -1,4 +1,4 @@
-import React, { } from 'react';
+import React from "react";
 import ButtonSpinner from "../ButtonSpinner/ButtonSpinner.tsx";
 
 interface Props {

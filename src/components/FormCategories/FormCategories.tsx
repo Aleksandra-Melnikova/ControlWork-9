@@ -1,35 +1,40 @@
-import { useCallback, useEffect, useState } from 'react';
-import { IForm } from '../../types';
+import { useCallback, useEffect, useState } from "react";
+import { IForm } from "../../types";
 import {
   createCategory,
-  editCategory, fetchAllCategory,
-  getOneCategoryById
-} from '../../store/thunks/categoryThunk.ts';
-import { toast } from 'react-toastify';
-import { useAppDispatch, useAppSelector, } from '../../app/hooks.ts';
+  editCategory,
+  fetchAllCategory,
+  getOneCategoryById,
+} from "../../store/thunks/categoryThunk.ts";
+import { toast } from "react-toastify";
+import { useAppDispatch, useAppSelector } from "../../app/hooks.ts";
 import {
   changeIsEdit,
-  changeShowModal, selectAddLoading,
-  selectEdit, selectEditLoading,
+  changeShowModal,
+  selectAddLoading,
+  selectEdit,
+  selectEditLoading,
   selectIdEdit,
   selectOneCategory,
-} from '../../store/slices/CategorySlice.ts';
-import ButtonLoading from '../UI/ButtonLoading/ButtonLoading.tsx';
+} from "../../store/slices/CategorySlice.ts";
+import ButtonLoading from "../UI/ButtonLoading/ButtonLoading.tsx";
 
 const initialForm: IForm = {
-  category: '',
-  name: '',
+  category: "",
+  name: "",
 };
 const FormCategories = () => {
-  const category = ['income', 'expense'];
+  const category = ["income", "expense"];
   const [form, setForm] = useState<IForm>(initialForm);
   const dispatch = useAppDispatch();
-  const isEdit= useAppSelector(selectEdit);
+  const isEdit = useAppSelector(selectEdit);
   const id = useAppSelector(selectIdEdit);
-  const isEditLoading= useAppSelector(selectEditLoading);
+  const isEditLoading = useAppSelector(selectEditLoading);
   const isCreateLoading = useAppSelector(selectAddLoading);
   const oneCategory = useAppSelector(selectOneCategory);
-  const changeForm = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const changeForm = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+  ) => {
     setForm((prevState) => {
       return {
         ...prevState,
@@ -66,7 +71,6 @@ const FormCategories = () => {
         toast.success("Category added successfully.");
         setForm(initialForm);
         dispatch(changeShowModal());
-
       } else {
         toast.warning("Fill all fields.");
       }
@@ -75,29 +79,29 @@ const FormCategories = () => {
   return (
     <div>
       <div className=" p-2 b fs-5 text-start">
-        <form onSubmit={(e)=>addNewCategory(e, form)} >
+        <form onSubmit={(e) => addNewCategory(e, form)}>
           <div className="form-group mb-3">
             <label htmlFor="type" className="form-label ">
               {" "}
               Category
             </label>
-              <select
-                required
-                id="category"
-                value={form.category}
-                onChange={changeForm}
-                name="category"
-                className="form-select"
-              >
-                <option className="fs-5" value="" disabled>
-                  Select a category
+            <select
+              required
+              id="category"
+              value={form.category}
+              onChange={changeForm}
+              name="category"
+              className="form-select"
+            >
+              <option className="fs-5" value="" disabled>
+                Select a category
+              </option>
+              {category.map((c) => (
+                <option key={c} value={c}>
+                  {c}
                 </option>
-                {category.map((c) => (
-                  <option key={c} value={c}>
-                    {c}
-                  </option>
-                ))}
-              </select>
+              ))}
+            </select>
           </div>
           <div className="mb-3">
             <label htmlFor="name" className="form-label ">
@@ -115,13 +119,16 @@ const FormCategories = () => {
             />
           </div>
 
-          <ButtonLoading isLoading={isEditLoading || isCreateLoading} isDisabled={isEditLoading || isCreateLoading} type="submit" text= {isEdit? 'Save' : 'Add'}/>
-
+          <ButtonLoading
+            isLoading={isEditLoading || isCreateLoading}
+            isDisabled={isEditLoading || isCreateLoading}
+            type="submit"
+            text={isEdit ? "Save" : "Add"}
+          />
         </form>
       </div>
-</div>
-)
-  ;
+    </div>
+  );
 };
 
 export default FormCategories;
