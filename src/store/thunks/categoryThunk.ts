@@ -22,12 +22,12 @@ export const fetchAllCategory = createAsyncThunk<ICategory[], void>(
   },
 );
 
-// export const deleteOneContact = createAsyncThunk<void, string>(
-//   "contacts/deleteOneContact",
-//   async (contactId: string) => {
-//     await axiosApi.delete(`contacts/${contactId}.json`);
-//   },
-// );
+export const deleteOneCategory = createAsyncThunk<void, string>(
+  "category/deleteOneCategory",
+  async (categoryId: string) => {
+    await axiosApi.delete(`categories/${categoryId}.json`);
+  },
+);
 
 export const createCategory = createAsyncThunk<void, IForm>(
   "category/createCategory",
@@ -36,18 +36,18 @@ export const createCategory = createAsyncThunk<void, IForm>(
   },
 );
 
-// export const getOneContactById = createAsyncThunk<IForm | null, string>(
-//   "contacts/getOneContactById",
-//   async (contactId) => {
-//     const response = await axiosApi<IContact | null>(
-//       `contacts/${contactId}.json`,
-//     );
-//     return response.data || null;
-//   },
-// );
-// export const editContact = createAsyncThunk<
-//   void,
-//   { contactId: string; contact: IForm }
-// >("contacts/ editContact", async ({ contactId, contact }) => {
-//   await axiosApi.put(`contacts/${contactId}.json`, { ...contact });
-// });
+export const getOneCategoryById = createAsyncThunk<IForm | null, string>(
+  "category/getOneCategoryById ",
+  async (categoryId) => {
+    const response = await axiosApi<ICategory | null>(
+      `categories/${categoryId}.json`,
+    );
+    return response.data || null;
+  },
+);
+export const editCategory = createAsyncThunk<
+  void,
+  { categoryId: string; category: IForm }
+>("category/editCategory", async ({ categoryId, category}) => {
+  await axiosApi.put(`categories/${categoryId}.json`, { ...category });
+});

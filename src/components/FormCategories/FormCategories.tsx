@@ -1,9 +1,20 @@
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { IForm } from '../../types';
-import { createCategory } from '../../store/thunks/categoryThunk.ts';
+import {
+  createCategory,
+  editCategory,
+  getOneCategoryById
+} from '../../store/thunks/categoryThunk.ts';
 import { toast } from 'react-toastify';
-import { useAppDispatch, } from '../../app/hooks.ts';
-import { changeShowModal,  } from '../../store/slices/CategorySlice.ts';
+import { useAppDispatch, useAppSelector, } from '../../app/hooks.ts';
+import {
+  changeIsEdit,
+  changeShowModal, selectAddLoading,
+  selectEdit, selectEditLoading,
+  selectIdEdit,
+  selectOneCategory,
+} from '../../store/slices/CategorySlice.ts';
+import ButtonLoading from '../UI/ButtonLoading/ButtonLoading.tsx';
 
 const initialForm: IForm = {
   category: '',
@@ -13,6 +24,13 @@ const FormCategories = () => {
   const category = ['income', 'expense'];
   const [form, setForm] = useState<IForm>(initialForm);
   const dispatch = useAppDispatch();
+  const isEdit= useAppSelector(selectEdit);
+  const id = useAppSelector(selectIdEdit);
+  const isEditLoading= useAppSelector(selectEditLoading);
+  const isCreateLoading = useAppSelector(selectAddLoading);
+
+
+  const oneCategory = useAppSelector(selectOneCategory);
   const changeForm = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setForm((prevState) => {
       return {
@@ -21,13 +39,29 @@ const FormCategories = () => {
       };
     });
   };
+  useEffect(() => {
+    if (id) {
+      if (oneCategory) setForm({ ...oneCategory });
+    } else {
+      setForm({ ...initialForm });
+    }
+  }, [oneCategory, id]);
+  const getCategoryById = useCallback(async () => {
+    if (id) {
+      dispatch(getOneCategoryById(id));
+    }
+  }, [dispatch, id]);
+
+  useEffect(() => {
+    void getCategoryById();
+  }, [dispatch, getCategoryById]);
   const addNewCategory = async (e: React.FormEvent, form: IForm) => {
     e.preventDefault();
-    // if (id) {
-    //   await dispatch(editMenuItem({ dishId: id, dish: { ...form } }));
-    //   navigate("/admin");
-    //   toast.success("Dish was edited successfully.");
-    // } else {
+    if (isEdit && id) {
+      await dispatch(editCategory({ categoryId: id, category: { ...form } }));
+      dispatch(changeIsEdit(id));
+      toast.success("Dish was edited successfully.");
+    } else {
       if (form.category.trim().length > 0 && form.name.trim().length > 0) {
         await dispatch(createCategory({ ...form }));
         toast.success("Category added successfully.");
@@ -37,7 +71,7 @@ const FormCategories = () => {
       } else {
         toast.warning("Fill in the title field.");
       }
-    // }
+    }
   };
   return (
     <div>
@@ -82,10 +116,8 @@ const FormCategories = () => {
             />
           </div>
 
-          <button className="ps-4 pe-4 btn btn-info" type="submit">
-            Save
-          </button>
-          {" "}
+          <ButtonLoading isLoading={isEditLoading || isCreateLoading} isDisabled={isEditLoading || isCreateLoading} type="submit" text= {isEdit? 'Save' : 'Add'}/>
+
         </form>
       </div>
 </div>
