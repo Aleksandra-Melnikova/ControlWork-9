@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { IForm } from '../../types';
 import {
   createCategory,
-  editCategory,
+  editCategory, fetchAllCategory,
   getOneCategoryById
 } from '../../store/thunks/categoryThunk.ts';
 import { toast } from 'react-toastify';
@@ -60,16 +60,17 @@ const FormCategories = () => {
     if (isEdit && id) {
       await dispatch(editCategory({ categoryId: id, category: { ...form } }));
       dispatch(changeIsEdit(id));
-      toast.success("Dish was edited successfully.");
+      toast.success("Category was edited successfully.");
     } else {
       if (form.category.trim().length > 0 && form.name.trim().length > 0) {
         await dispatch(createCategory({ ...form }));
+        await dispatch(fetchAllCategory());
         toast.success("Category added successfully.");
         setForm(initialForm);
         dispatch(changeShowModal());
 
       } else {
-        toast.warning("Fill in the title field.");
+        toast.warning("Fill all fields.");
       }
     }
   };

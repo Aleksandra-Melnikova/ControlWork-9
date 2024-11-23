@@ -1,7 +1,13 @@
 import { NavLink } from "react-router-dom";
 import "./Toolbar.css";
 
-const ToolBar = () => {
+import React, { MouseEventHandler } from 'react';
+
+export interface ToolBarProps {
+  openModal:MouseEventHandler
+}
+const ToolBar:React.FC<ToolBarProps> = ({openModal}) => {
+  // const dispatch = useAppDispatch();
 
 
   return (
@@ -22,7 +28,7 @@ const ToolBar = () => {
                 </NavLink>
               </li>
               <li className="nav-item">
-                <a
+                <a onClick={openModal}
                   className={`nav-link  fs-4 `}
 
                 >

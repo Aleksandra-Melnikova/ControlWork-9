@@ -11,7 +11,7 @@ import {
 import { RootState } from '../../app/store.ts';
 import { ICategory, IForm } from '../../types';
 
-interface CartState {
+interface CategoryState {
 isAddLoading: boolean;
 showModal: boolean;
 categories: ICategory[];
@@ -24,7 +24,7 @@ isFetchLoading: boolean;
   idEdit: string | null;
 }
 
-const initialState: CartState = {
+const initialState: CategoryState  = {
  isAddLoading: false,
   showModal: false,
   categories:[],
@@ -43,18 +43,9 @@ export const selectFetchLoading = (state: RootState) => state.category.isFetchLo
 export const selectDeleteLoading = (state: RootState) => state.category.isDeleteLoading;
 export const selectOneCategory = (state: RootState) => state.category.oneCategory;
 export const selectEditLoading = (state: RootState) => state.category.isEditLoading;
-export const selectFetchOneLoading = (state: RootState) => state.category.isFetchOneLoading;
 export const selectEdit = (state: RootState) => state.category.isEdit;
 export const selectIdEdit = (state: RootState) => state.category.idEdit;
-// export const selectOrderLoading = (state: RootState) =>
-//   state.cart.isOrderLoading;
-// export const selectOrdersAdminLoading = (state: RootState) =>
-//   state.cart.isOrdersAdminLoading;
-// export const selectDeleteOrderLoading = (state: RootState) =>
-//   state.cart.isDeleteOrderLoading;
-// export const selectOrders = (state: RootState) => state.cart.ordersPizza;
-// export const selectOrdersAdmin = (state: RootState) => state.cart.ordersAdmin;
-// export const selectCartDishes = (state: RootState) => state.cart.cartDishes;
+
 
 const categorySlice = createSlice({
   name: "category",
@@ -68,7 +59,7 @@ const categorySlice = createSlice({
       state.showModal = !state.showModal;
       state.idEdit = action.payload;
       if( !state.showModal){
-        state.idEdit = null
+        state.idEdit = null;
       }
     },
   },
@@ -129,39 +120,6 @@ const categorySlice = createSlice({
       .addCase(editCategory.rejected, (state) => {
         state.isEditLoading = false;
       });
-      // .addCase(fetchAllOrders.pending, (state) => {
-      //   state.isOrdersAdminLoading = true;
-      // })
-      // .addCase(
-      //   fetchAllOrders.fulfilled,
-      //   (state, action: PayloadAction<IOrdersFromApi | null>) => {
-      //     state.isOrdersAdminLoading = false;
-      //     if (action.payload) {
-      //       const postResponseNew = Object.entries(action.payload);
-      //       const array: IOrdersFromApi[] = [];
-      //       for (let i = 0; i < postResponseNew.length; i++) {
-      //         const obj: IOrdersFromApi = {
-      //           id: postResponseNew[i][0],
-      //           objOrders: postResponseNew[i][1],
-      //         };
-      //         array.push(obj);
-      //       }
-      //       state.ordersAdmin = array;
-      //     }
-      //   },
-      // )
-      // .addCase(fetchAllOrders.rejected, (state) => {
-      //   state.isOrdersAdminLoading = false;
-      // })
-      // .addCase(deleteOneOrderItem.pending, (state) => {
-      //   state.isDeleteOrderLoading = true;
-      // })
-      // .addCase(deleteOneOrderItem.fulfilled, (state) => {
-      //   state.isDeleteOrderLoading = false;
-      // })
-      // .addCase(deleteOneOrderItem.rejected, (state) => {
-      //   state.isDeleteOrderLoading = false;
-      // });
   },
 });
 export const categoryReducer = categorySlice.reducer;
